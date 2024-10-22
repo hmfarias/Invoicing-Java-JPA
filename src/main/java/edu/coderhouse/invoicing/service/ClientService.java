@@ -14,14 +14,8 @@ public class ClientService {
     private ClientRepository repository;
 
     //Creo el constructor
-
     public ClientService(ClientRepository repository) {
         this.repository = repository;
-    }
-
-    //INSERTAR UN CLIENTE
-    public Client save(Client client){
-        return repository.save(client);
     }
 
     //OBTENER TODOS LOS CLIENTES
@@ -34,6 +28,11 @@ public class ClientService {
     //si no está, Optional resuelve
     public Optional<Client> getById(long id){
         return repository.findById(id);
+    }
+
+    //INSERTAR UN CLIENTE
+    public Client save(Client client){
+        return repository.save(client);
     }
 
     //ACTUALIZAR UN CLIENTE

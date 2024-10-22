@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Optional;
 
 @RestController //Transforma la clase en un controlador de Spring
-@RequestMapping("/api/productos")
+@RequestMapping("/api/products")
 public class ProductController {
     @Autowired
     private ProductService service;

@@ -1,5 +1,8 @@
 package edu.coderhouse.invoicing.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -27,17 +30,21 @@ public class Invoice {
     /*Fields -----------------------------------------------------------*/
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Schema(description = "IDENTITY self-generated", requiredMode = Schema.RequiredMode.AUTO, example = "1")
     private int id;
 
-    @ManyToOne
-    @JoinColumn(name = "client_id")
-    private Client client;
-
     @Column(name = "created_at")
+    @Schema(description = "Invoice creation date", requiredMode = Schema.RequiredMode.AUTO, example = "01/04/2024")
     private LocalDateTime createdAt;
 
     @Column(name = "total")
+    @Schema(description = "Total invoice value", requiredMode = Schema.RequiredMode.AUTO, example = "7.450,00")
     private double total;
+
+    @ManyToOne
+    @JoinColumn(name = "client_id")
+    @JsonBackReference
+    private Client client;
 
     @OneToMany(mappedBy = "invoice", cascade = CascadeType.ALL)
     private List<InvoiceDetail> invoiceDetails;

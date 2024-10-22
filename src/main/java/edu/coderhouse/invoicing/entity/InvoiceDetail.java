@@ -1,5 +1,7 @@
 package edu.coderhouse.invoicing.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 
 @Entity
@@ -21,19 +23,21 @@ public class InvoiceDetail {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int invoiceDetailId;
 
-    @ManyToOne
-    @JoinColumn(name = "invoice_id", nullable = false)
-    private Invoice invoice;
-
-    @ManyToOne
-    @JoinColumn(name = "product_id", nullable = false)
-    private Product product;
-
     @Column(nullable = false)
     private int amount;
 
     @Column(nullable = false)
     private double price;
+
+    @ManyToOne
+    @JoinColumn(name = "invoice_id", nullable = false)
+    @JsonBackReference
+    private Invoice invoice;
+
+    @ManyToOne
+    @JoinColumn(name = "product_id", nullable = false)
+    @JsonBackReference
+    private Product product;
     /*END Fields -----------------------------------------------------------*/
 
     /*Geters y Seters ---------------------------------------------------*/

@@ -1,5 +1,7 @@
 package edu.coderhouse.invoicing.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import java.util.List;
 
@@ -45,6 +47,7 @@ public class Product {
     private double price;
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
+    @JsonManagedReference
     private List<InvoiceDetail> invoiceDetails;
     /*END Fields -----------------------------------------------------------*/
 
