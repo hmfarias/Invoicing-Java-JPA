@@ -1,6 +1,6 @@
 package edu.coderhouse.invoicing.service;
 
-import edu.coderhouse.invoicing.entity.Client;
+import edu.coderhouse.invoicing.entity.ClientEntity;
 import edu.coderhouse.invoicing.repository.ClientRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,24 +19,24 @@ public class ClientService {
     }
 
     //OBTENER TODOS LOS CLIENTES
-    public List<Client> getClients(){
+    public List<ClientEntity> getClients(){
         return repository.findAll();
     }
 
     //OBTENER UN CLIENTE POR ID
     //uso Optional porque puede que el producto que busque esté o no esté.
     //si no está, Optional resuelve
-    public Optional<Client> getById(long id){
+    public Optional<ClientEntity> getById(long id){
         return repository.findById(id);
     }
 
     //INSERTAR UN CLIENTE
-    public Client save(Client client){
+    public ClientEntity save(ClientEntity client){
         return repository.save(client);
     }
 
     //ACTUALIZAR UN CLIENTE
-    public Optional<Client> update(long id, Client newClientData) {
+    public Optional<ClientEntity> update(long id, ClientEntity newClientData) {
         return repository.findById(id).map(client -> {
             client.setName(newClientData.getName());
             client.setLastName(newClientData.getLastName());
@@ -47,7 +47,7 @@ public class ClientService {
 
     //ELIMINAR UN CLIENTE
     public boolean delete(long id) {
-        Optional<Client> client = repository.findById(id);
+        Optional<ClientEntity> client = repository.findById(id);
         if (client.isPresent()) {
             repository.deleteById(id);
             return true;

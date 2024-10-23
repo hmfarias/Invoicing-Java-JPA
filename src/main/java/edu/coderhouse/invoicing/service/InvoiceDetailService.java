@@ -1,7 +1,6 @@
 package edu.coderhouse.invoicing.service;
 
-import edu.coderhouse.invoicing.entity.Invoice;
-import edu.coderhouse.invoicing.entity.InvoiceDetail;
+import edu.coderhouse.invoicing.entity.InvoiceDetailEntity;
 import edu.coderhouse.invoicing.repository.InvoiceDetailRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,27 +20,27 @@ public class InvoiceDetailService {
     }
 
     // Guardar un detalle de factura
-    public InvoiceDetail save(InvoiceDetail invoiceDetail) {
+    public InvoiceDetailEntity save(InvoiceDetailEntity invoiceDetail) {
         return repository.save(invoiceDetail);
     }
 
     // Guardar una lista de detalles de factura
-    public List<InvoiceDetail> saveAll(List<InvoiceDetail> invoiceDetails) {
+    public List<InvoiceDetailEntity> saveAll(List<InvoiceDetailEntity> invoiceDetails) {
         return repository.saveAll(invoiceDetails);
     }
 
     // Obtener todos los detalles de facturas
-    public List<InvoiceDetail> getInvoiceDetails() {
+    public List<InvoiceDetailEntity> getInvoiceDetails() {
         return repository.findAll();
     }
 
     // Obtener un detalle de factura por su ID
-    public InvoiceDetail getById(long id) {
+    public InvoiceDetailEntity getById(long id) {
         return repository.findById(id).orElse(null);
     }
 
     // Actualizar un detalle
-    public Optional<InvoiceDetail> update(long id, InvoiceDetail newInvoiceDetailData) {
+    public Optional<InvoiceDetailEntity> update(long id, InvoiceDetailEntity newInvoiceDetailData) {
         return repository.findById(id).map(invoiceDetail -> {
             invoiceDetail.setInvoiceDetailId(newInvoiceDetailData.getInvoiceDetailId());
             invoiceDetail.setAmount(newInvoiceDetailData.getAmount());
@@ -53,7 +52,7 @@ public class InvoiceDetailService {
 
     // Eliminar un detalle de factura
     public boolean delete(long id) {
-        Optional<InvoiceDetail> invoiceDetail = repository.findById(id);
+        Optional<InvoiceDetailEntity> invoiceDetail = repository.findById(id);
         if (invoiceDetail.isPresent()) {
             repository.deleteById(id);
             return true;

@@ -1,6 +1,6 @@
 package edu.coderhouse.invoicing.controller;
 
-import edu.coderhouse.invoicing.entity.Product;
+import edu.coderhouse.invoicing.entity.ProductEntity;
 import edu.coderhouse.invoicing.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -22,15 +22,15 @@ public class ProductController {
 
     //PARA TRAER TODOS LOS PRODUCTOS
     @GetMapping(produces = {MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<Iterable<Product>> getAll(){
-        Iterable<Product> products = service.getProducts();
+    public ResponseEntity<Iterable<ProductEntity>> getAll(){
+        Iterable<ProductEntity> products = service.getProducts();
         return ResponseEntity.ok(products);
     }
 
     //PARA TRAER UN PRODUCTO POR ID
     @GetMapping(value = "/{id}",produces = {MediaType.APPLICATION_JSON_VALUE})
-        public ResponseEntity<Optional<Product>> getById(@PathVariable long id){
-        Optional<Product> product = service.getById(id);
+        public ResponseEntity<Optional<ProductEntity>> getById(@PathVariable long id){
+        Optional<ProductEntity> product = service.getById(id);
 
         //Verifico si el producto con ese id existe
         if (product.isPresent()){
@@ -42,9 +42,9 @@ public class ProductController {
 
     //PARA AGREGAR UN NUEVO PRODUCTO
     @PostMapping(consumes = {MediaType.APPLICATION_JSON_VALUE}, produces = {MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<Product> create(@RequestBody Product product) {
+    public ResponseEntity<ProductEntity> create(@RequestBody ProductEntity product) {
         try {
-            Product newProduct = service.save(product);
+            ProductEntity newProduct = service.save(product);
             return ResponseEntity.ok(newProduct);
         } catch (Exception e) {
             e.printStackTrace();
@@ -54,8 +54,8 @@ public class ProductController {
 
     //PARA ACTUALIZAR UN PRODUCTO
     @PutMapping(value = "/{id}", consumes = {MediaType.APPLICATION_JSON_VALUE}, produces = {MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<Product> update(@PathVariable long id, @RequestBody Product product) {
-        Optional<Product> updatedProduct = service.update(id, product);
+    public ResponseEntity<ProductEntity> update(@PathVariable long id, @RequestBody ProductEntity product) {
+        Optional<ProductEntity> updatedProduct = service.update(id, product);
 
         // Verifico si el producto fue encontrado y actualizado
         if (updatedProduct.isPresent()) {

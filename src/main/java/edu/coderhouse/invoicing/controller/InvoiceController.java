@@ -1,7 +1,7 @@
 package edu.coderhouse.invoicing.controller;
 
 import edu.coderhouse.invoicing.dto.ErrorResponseDto;
-import edu.coderhouse.invoicing.entity.Invoice;
+import edu.coderhouse.invoicing.entity.InvoiceEntity;
 import edu.coderhouse.invoicing.service.InvoiceService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -14,7 +14,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 
-import java.util.List;
 import java.util.Optional;
 
 @RestController //Transforma la clase en un controlador de Spring
@@ -35,16 +34,16 @@ public class InvoiceController {
             @ApiResponse(responseCode = "400", description = "Invalid Request"),
     })
     @GetMapping(produces = {MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<Iterable<Invoice>> getAll(){
-        Iterable<Invoice> invoices = invoiceService.getInvoices();
+    public ResponseEntity<Iterable<InvoiceEntity>> getAll(){
+        Iterable<InvoiceEntity> invoices = invoiceService.getInvoices();
         return ResponseEntity.ok(invoices);
     }
 
     //PARA TRAER UNA FACTURA POR ID
     @Operation(summary = "Gets an invoice by ID")
     @GetMapping(value = "/{id}",produces = {MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<Optional<Invoice>> getById(@PathVariable long id){
-        Optional<Invoice> invoice = invoiceService.getById(id);
+    public ResponseEntity<Optional<InvoiceEntity>> getById(@PathVariable long id){
+        Optional<InvoiceEntity> invoice = invoiceService.getById(id);
 
         //Verifico si la factura con ese id existe
         if (invoice.isPresent()){
@@ -63,9 +62,9 @@ public class InvoiceController {
             )
     })
     @PostMapping(consumes = {MediaType.APPLICATION_JSON_VALUE}, produces = {MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<Invoice> create(@RequestBody Invoice invoice) {
+    public ResponseEntity<InvoiceEntity> create(@RequestBody InvoiceEntity invoice) {
         try {
-            Invoice newInvoice = invoiceService.save(invoice);
+            InvoiceEntity newInvoice = invoiceService.save(invoice);
             return ResponseEntity.ok(newInvoice);
         } catch (Exception e) {
             e.printStackTrace();
@@ -76,8 +75,8 @@ public class InvoiceController {
     //PARA ACTUALIZAR UNA FACTURA
     @Operation(summary = "Update invoice's data")
     @PutMapping(value = "/{id}", consumes = {MediaType.APPLICATION_JSON_VALUE}, produces = {MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<Invoice> update(@PathVariable long id, @RequestBody Invoice invoice) {
-        Optional<Invoice> updatedInvoice = invoiceService.update(id, invoice);
+    public ResponseEntity<InvoiceEntity> update(@PathVariable long id, @RequestBody InvoiceEntity invoice) {
+        Optional<InvoiceEntity> updatedInvoice = invoiceService.update(id, invoice);
 
         // Verifico si la factura fue encontrada y actualizada
         if (updatedInvoice.isPresent()) {
@@ -103,8 +102,8 @@ public class InvoiceController {
     //PARA ASIGNAR EL CLIENTE A UNA FACTURA
     @Operation(summary = "Assign a customer to an invoice")
     @PostMapping("/{clientId}/asign/{invoiceId}")
-    public ResponseEntity<Invoice> asignClient(@PathVariable Long clientId, @PathVariable Long invoiceId) throws Exception {
-        Invoice invoice = invoiceService.asignClient(clientId,invoiceId);
+    public ResponseEntity<InvoiceEntity> asignClient(@PathVariable Long clientId, @PathVariable Long invoiceId) throws Exception {
+        InvoiceEntity invoice = invoiceService.asignClient(clientId,invoiceId);
 
         return ResponseEntity.ok(invoice);
     }

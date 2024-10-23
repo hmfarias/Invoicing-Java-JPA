@@ -1,6 +1,6 @@
 package edu.coderhouse.invoicing.controller;
 
-import edu.coderhouse.invoicing.entity.InvoiceDetail;
+import edu.coderhouse.invoicing.entity.InvoiceDetailEntity;
 import edu.coderhouse.invoicing.service.InvoiceDetailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -8,7 +8,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 
-import java.util.List;
 import java.util.Optional;
 
 @RestController //Transforma la clase en un controlador de Spring
@@ -24,15 +23,15 @@ public class InvoiceDetailController {
 
     //PARA TRAER TODOS LOS DETALLES
     @GetMapping(produces = {MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<Iterable<InvoiceDetail>> getAll(){
-        Iterable<InvoiceDetail> invoiceDetails = service.getInvoiceDetails();
+    public ResponseEntity<Iterable<InvoiceDetailEntity>> getAll(){
+        Iterable<InvoiceDetailEntity> invoiceDetails = service.getInvoiceDetails();
         return ResponseEntity.ok(invoiceDetails);
     }
 
     //PARA TRAER UN DETALLE POR ID
     @GetMapping(value = "/{id}",produces = {MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<Optional<InvoiceDetail>> getById(@PathVariable long id){
-        Optional<InvoiceDetail> invoiceDetail = Optional.ofNullable(service.getById(id));
+    public ResponseEntity<Optional<InvoiceDetailEntity>> getById(@PathVariable long id){
+        Optional<InvoiceDetailEntity> invoiceDetail = Optional.ofNullable(service.getById(id));
 
         //Verifico si el detalle con ese id existe
         if (invoiceDetail.isPresent()){
@@ -44,9 +43,9 @@ public class InvoiceDetailController {
 
     //PARA AGREGAR UN NUEVO DETALLE
     @PostMapping(consumes = {MediaType.APPLICATION_JSON_VALUE}, produces = {MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<InvoiceDetail> create(@RequestBody InvoiceDetail invoiceDetail) {
+    public ResponseEntity<InvoiceDetailEntity> create(@RequestBody InvoiceDetailEntity invoiceDetail) {
         try {
-            InvoiceDetail newInvoiceDetail = service.save(invoiceDetail);
+            InvoiceDetailEntity newInvoiceDetail = service.save(invoiceDetail);
             return ResponseEntity.ok(newInvoiceDetail);
         } catch (Exception e) {
             e.printStackTrace();
@@ -56,8 +55,8 @@ public class InvoiceDetailController {
 
     //PARA ACTUALIZAR UN DETALLE
     @PutMapping(value = "/{id}", consumes = {MediaType.APPLICATION_JSON_VALUE}, produces = {MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<InvoiceDetail> update(@PathVariable long id, @RequestBody InvoiceDetail invoiceDetail) {
-        Optional<InvoiceDetail> updatedInvoiceDetail = service.update(id, invoiceDetail);
+    public ResponseEntity<InvoiceDetailEntity> update(@PathVariable long id, @RequestBody InvoiceDetailEntity invoiceDetail) {
+        Optional<InvoiceDetailEntity> updatedInvoiceDetail = service.update(id, invoiceDetail);
 
         // Verifico si el detalle fue encontrada y actualizada
         if (updatedInvoiceDetail.isPresent()) {

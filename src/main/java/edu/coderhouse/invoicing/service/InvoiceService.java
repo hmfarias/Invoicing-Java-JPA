@@ -1,7 +1,7 @@
 package edu.coderhouse.invoicing.service;
 
-import edu.coderhouse.invoicing.entity.Client;
-import edu.coderhouse.invoicing.entity.Invoice;
+import edu.coderhouse.invoicing.entity.ClientEntity;
+import edu.coderhouse.invoicing.entity.InvoiceEntity;
 import edu.coderhouse.invoicing.repository.ClientRepository;
 import edu.coderhouse.invoicing.repository.InvoiceRepository;
 import org.apache.coyote.BadRequestException;
@@ -26,22 +26,22 @@ public class InvoiceService {
     }
 
     // Guardar una factura
-    public Invoice save(Invoice invoice) {
+    public InvoiceEntity save(InvoiceEntity invoice) {
         return invoiceRepository.save(invoice);
     }
 
     // Guardar una lista de facturas
-    public List<Invoice> saveAll(List<Invoice> invoices) {
+    public List<InvoiceEntity> saveAll(List<InvoiceEntity> invoices) {
         return invoiceRepository.saveAll(invoices);
     }
 
     // Obtener todas las facturas
-    public List<Invoice> getInvoices() {
+    public List<InvoiceEntity> getInvoices() {
         return invoiceRepository.findAll();
     }
 
     // Obtener una factura por su ID
-    public Optional<Invoice> getById(long id) {
+    public Optional<InvoiceEntity> getById(long id) {
         return invoiceRepository.findById(id);
     }
 
@@ -50,7 +50,7 @@ public class InvoiceService {
 //        return repository.save(invoice);
 //    }
 
-    public Optional<Invoice> update(long id, Invoice newInvoiceData) {
+    public Optional<InvoiceEntity> update(long id, InvoiceEntity newInvoiceData) {
         return invoiceRepository.findById(id).map(invoice -> {
             invoice.setClient(newInvoiceData.getClient());
             invoice.setCreatedAt(newInvoiceData.getCreatedAt());
@@ -61,7 +61,7 @@ public class InvoiceService {
 
     // Eliminar una factura
     public boolean delete(long id) {
-        Optional<Invoice> invoice = invoiceRepository.findById(id);
+        Optional<InvoiceEntity> invoice = invoiceRepository.findById(id);
         if (invoice.isPresent()) {
             invoiceRepository.deleteById(id);
             return true;
@@ -70,13 +70,13 @@ public class InvoiceService {
     }
 
     // Asignar factura a usuario
-    public Invoice asignClient(Long clientId, Long invoiceId) throws Exception{
-        Optional<Client> clientOpt = clientRepository.findById(clientId);
-        Optional<Invoice> invoiceOpt = invoiceRepository.findById(invoiceId);
+    public InvoiceEntity asignClient(Long clientId, Long invoiceId) throws Exception{
+        Optional<ClientEntity> clientOpt = clientRepository.findById(clientId);
+        Optional<InvoiceEntity> invoiceOpt = invoiceRepository.findById(invoiceId);
 
         if(clientOpt.isPresent() && invoiceOpt.isPresent()){
-            Invoice invoice = invoiceOpt.get();
-            Client client = clientOpt.get();
+            InvoiceEntity invoice = invoiceOpt.get();
+            ClientEntity client = clientOpt.get();
 
             invoice.setClient(client);
 

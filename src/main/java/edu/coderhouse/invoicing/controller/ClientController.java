@@ -1,7 +1,7 @@
 package edu.coderhouse.invoicing.controller;
 
 import edu.coderhouse.invoicing.dto.ErrorResponseDto;
-import edu.coderhouse.invoicing.entity.Client;
+import edu.coderhouse.invoicing.entity.ClientEntity;
 import edu.coderhouse.invoicing.service.ClientService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -21,11 +21,11 @@ import java.util.Optional;
 @RequestMapping("/api/clients")
 public class ClientController {
     @Autowired
-    private ClientService service;
+    private ClientService clientService;
 
     //Constructor
     public ClientController(ClientService service) {
-        this.service = service;
+        this.clientService = service;
     }
 
     //PARA TRAER TODOS LOS CLIENTES
@@ -35,16 +35,16 @@ public class ClientController {
             @ApiResponse(responseCode = "400", description = "Invalid Request"),
     })
     @GetMapping(produces = {MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<List<Client>> getAll(){
-        List<Client> clients = service.getClients();
+    public ResponseEntity<List<ClientEntity>> getAll(){
+        List<ClientEntity> clients = clientService.getClients();
         return ResponseEntity.ok(clients);
     }
 
     //PARA TRAER UN CLIENTE POR ID
     @Operation(summary = "Gets a client by ID")
     @GetMapping(value = "/{id}",produces = {MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<Optional<Client>> getById(@PathVariable long id){
-        Optional<Client> client = service.getById(id);
+    public ResponseEntity<Optional<ClientEntity>> getById(@PathVariable long id){
+        Optional<ClientEntity> client = clientService.getById(id);
 
         //Verifico si el cliente con ese id existe
         if (client.isPresent()){
@@ -63,9 +63,9 @@ public class ClientController {
             )
     })
     @PostMapping(consumes = {MediaType.APPLICATION_JSON_VALUE}, produces = {MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<Client> create(@RequestBody Client client) {
+    public ResponseEntity<ClientEntity> create(@RequestBody ClientEntity client) {
         try {
-            Client newClient = service.save(client);
+            ClientEntity newClient = clientService.save(client);
             return ResponseEntity.ok(newClient);
         } catch (Exception e) {
             e.printStackTrace();
@@ -76,22 +76,18 @@ public class ClientController {
     //PARA ACTUALIZAR UN CLIENTE
     @Operation(summary = "Update a customer's data")
     @PutMapping(value = "/{id}", consumes = {MediaType.APPLICATION_JSON_VALUE}, produces = {MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<Client> update(@PathVariable long id, @RequestBody Client client) {
-        Optional<Client> updatedClient = service.update(id, client);
+    public ResponseEntity<ClientEntity> update(@PathVariable long id, @RequestBody ClientEntity client) {
+        Optional<ClientEntity> updatedClient = clientService.update(id, client);
 
         // Verifico si el cliente fue encontrado y actualizado
-        if (updatedClient.isPresent()) {
-            return ResponseEntity.ok(updatedClient.get());
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+        return updatedClient.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     //PARA ELIMINAR UN CLIENTE
     @Operation(summary = "Remove a client")
     @DeleteMapping(value = "/{id}")
     public ResponseEntity<Void> delete(@PathVariable long id) {
-        boolean deleted = service.delete(id);
+        boolean deleted = clientService.delete(id);
 
         if (deleted) {
             return ResponseEntity.noContent().build(); // 204 No Content
