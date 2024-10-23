@@ -14,24 +14,24 @@ import java.util.Optional;
 @RequestMapping("/api/detalle-facturas")
 public class InvoiceDetailController {
     @Autowired
-    private InvoiceDetailService service;
+    private InvoiceDetailService invoiceDetailService;
 
     //Constructor
     public InvoiceDetailController(InvoiceDetailService service) {
-        this.service = service;
+        this.invoiceDetailService = service;
     }
 
     //PARA TRAER TODOS LOS DETALLES
     @GetMapping(produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<Iterable<InvoiceDetailEntity>> getAll(){
-        Iterable<InvoiceDetailEntity> invoiceDetails = service.getInvoiceDetails();
+        Iterable<InvoiceDetailEntity> invoiceDetails = invoiceDetailService.getInvoiceDetails();
         return ResponseEntity.ok(invoiceDetails);
     }
 
     //PARA TRAER UN DETALLE POR ID
     @GetMapping(value = "/{id}",produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<Optional<InvoiceDetailEntity>> getById(@PathVariable long id){
-        Optional<InvoiceDetailEntity> invoiceDetail = Optional.ofNullable(service.getById(id));
+        Optional<InvoiceDetailEntity> invoiceDetail = Optional.ofNullable(invoiceDetailService.getById(id));
 
         //Verifico si el detalle con ese id existe
         if (invoiceDetail.isPresent()){
@@ -45,7 +45,7 @@ public class InvoiceDetailController {
     @PostMapping(consumes = {MediaType.APPLICATION_JSON_VALUE}, produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<InvoiceDetailEntity> create(@RequestBody InvoiceDetailEntity invoiceDetail) {
         try {
-            InvoiceDetailEntity newInvoiceDetail = service.save(invoiceDetail);
+            InvoiceDetailEntity newInvoiceDetail = invoiceDetailService.save(invoiceDetail);
             return ResponseEntity.ok(newInvoiceDetail);
         } catch (Exception e) {
             e.printStackTrace();
@@ -56,7 +56,7 @@ public class InvoiceDetailController {
     //PARA ACTUALIZAR UN DETALLE
     @PutMapping(value = "/{id}", consumes = {MediaType.APPLICATION_JSON_VALUE}, produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<InvoiceDetailEntity> update(@PathVariable long id, @RequestBody InvoiceDetailEntity invoiceDetail) {
-        Optional<InvoiceDetailEntity> updatedInvoiceDetail = service.update(id, invoiceDetail);
+        Optional<InvoiceDetailEntity> updatedInvoiceDetail = invoiceDetailService.update(id, invoiceDetail);
 
         // Verifico si el detalle fue encontrada y actualizada
         if (updatedInvoiceDetail.isPresent()) {
@@ -69,7 +69,7 @@ public class InvoiceDetailController {
     //PARA ELIMINAR UN DETALLE
     @DeleteMapping(value = "/{id}")
     public ResponseEntity<Void> delete(@PathVariable long id) {
-        boolean deleted = service.delete(id);
+        boolean deleted = invoiceDetailService.delete(id);
 
         if (deleted) {
             return ResponseEntity.noContent().build(); // 204 No Content

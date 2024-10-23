@@ -13,24 +13,24 @@ import java.util.Optional;
 @RequestMapping("/api/products")
 public class ProductController {
     @Autowired
-    private ProductService service;
+    private ProductService productService;
 
     //Constructor
     public ProductController(ProductService service) {
-        this.service = service;
+        this.productService = service;
     }
 
     //PARA TRAER TODOS LOS PRODUCTOS
     @GetMapping(produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<Iterable<ProductEntity>> getAll(){
-        Iterable<ProductEntity> products = service.getProducts();
+        Iterable<ProductEntity> products = productService.getProducts();
         return ResponseEntity.ok(products);
     }
 
     //PARA TRAER UN PRODUCTO POR ID
     @GetMapping(value = "/{id}",produces = {MediaType.APPLICATION_JSON_VALUE})
         public ResponseEntity<Optional<ProductEntity>> getById(@PathVariable long id){
-        Optional<ProductEntity> product = service.getById(id);
+        Optional<ProductEntity> product = productService.getById(id);
 
         //Verifico si el producto con ese id existe
         if (product.isPresent()){
@@ -44,7 +44,7 @@ public class ProductController {
     @PostMapping(consumes = {MediaType.APPLICATION_JSON_VALUE}, produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<ProductEntity> create(@RequestBody ProductEntity product) {
         try {
-            ProductEntity newProduct = service.save(product);
+            ProductEntity newProduct = productService.save(product);
             return ResponseEntity.ok(newProduct);
         } catch (Exception e) {
             e.printStackTrace();
@@ -55,7 +55,7 @@ public class ProductController {
     //PARA ACTUALIZAR UN PRODUCTO
     @PutMapping(value = "/{id}", consumes = {MediaType.APPLICATION_JSON_VALUE}, produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<ProductEntity> update(@PathVariable long id, @RequestBody ProductEntity product) {
-        Optional<ProductEntity> updatedProduct = service.update(id, product);
+        Optional<ProductEntity> updatedProduct = productService.update(id, product);
 
         // Verifico si el producto fue encontrado y actualizado
         if (updatedProduct.isPresent()) {
@@ -68,7 +68,7 @@ public class ProductController {
     //PARA ELIMINAR UN PRODUCTO
     @DeleteMapping(value = "/{id}")
     public ResponseEntity<Void> delete(@PathVariable long id) {
-        boolean deleted = service.delete(id);
+        boolean deleted = productService.delete(id);
 
         if (deleted) {
             return ResponseEntity.noContent().build(); // 204 No Content
