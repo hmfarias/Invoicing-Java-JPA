@@ -45,11 +45,12 @@ public class InvoiceService {
         return invoiceRepository.findById(id);
     }
 
-    // Actualizar una factura
-//    public Invoice update(Invoice invoice) {
-//        return repository.save(invoice);
-//    }
+    // Obtener una factura pero con su cliente
+    public Optional<InvoiceEntity> getInvoiceWithClient(Long id) {
+        return invoiceRepository.findById(id);
+    }
 
+    // Actualizar una factura
     public Optional<InvoiceEntity> update(long id, InvoiceEntity newInvoiceData) {
         return invoiceRepository.findById(id).map(invoice -> {
             invoice.setClient(newInvoiceData.getClient());

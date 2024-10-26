@@ -1,6 +1,7 @@
 package edu.coderhouse.invoicing.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
@@ -44,7 +45,7 @@ public class ProductEntity {
     /*Fields -----------------------------------------------------------*/
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Long id;
 
     @Column(name = "description", length = 150)
     private String description;
@@ -59,8 +60,9 @@ public class ProductEntity {
     private double price;
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
-    @JsonIgnoreProperties("product")
+    //@JsonIgnoreProperties("product")
     //@JsonBackReference
+    @JsonIgnore
     private List<InvoiceDetailEntity> invoiceDetails;
     /*END Fields -----------------------------------------------------------*/
 

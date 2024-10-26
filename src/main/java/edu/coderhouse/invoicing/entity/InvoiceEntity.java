@@ -29,19 +29,11 @@ public class InvoiceEntity {
         this.total = total;
     }
 
-//    public InvoiceEntity(ClientEntity client, LocalDateTime createdAt, double total, List<InvoiceDetailEntity> invoiceDetails) {
-//        this.client = client;
-//        this.createdAt = createdAt;
-//        this.total = total;
-//        this.invoiceDetails = invoiceDetails;
-//    }
-    /*END Constructors  ------------------------------------------------*/
-
     /*Fields -----------------------------------------------------------*/
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Schema(description = "IDENTITY self-generated", requiredMode = Schema.RequiredMode.AUTO, example = "1")
-    private int id;
+    private Long id;
 
     @Column(name = "created_at")
     @Schema(description = "Invoice creation date", requiredMode = Schema.RequiredMode.AUTO, example = "01/04/2024")
@@ -51,13 +43,25 @@ public class InvoiceEntity {
     @Schema(description = "Total invoice value", requiredMode = Schema.RequiredMode.AUTO, example = "7.450,00")
     private double total;
 
-    @ManyToOne
+//    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "client_id")
     @JoinColumn(name = "client_id")
     @JsonBackReference
     private ClientEntity client;
 
-    @OneToMany(mappedBy = "invoice", cascade = CascadeType.ALL)
+//    @OneToMany(mappedBy = "invoice", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "invoice", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonManagedReference
     private List<InvoiceDetailEntity> invoiceDetails;
+
+//
+//    @OneToMany(mappedBy = "invoice", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+//    private List<InvoiceDetailEntity> invoiceDetails;
+//
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "client_id", nullable = false)
+//    private ClientEntity client;
+
     /*END Fields -----------------------------------------------------------*/
 }

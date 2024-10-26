@@ -32,7 +32,7 @@ public class InvoiceDetailEntity {
     /*Fields -----------------------------------------------------------*/
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int invoiceDetailId;
+    private Long invoiceDetailId;
 
     @Column(nullable = false)
     private int amount;

@@ -1,6 +1,7 @@
 package edu.coderhouse.invoicing.controller;
 
 import edu.coderhouse.invoicing.dto.ErrorResponseDto;
+import edu.coderhouse.invoicing.dto.InvoiceDTO;
 import edu.coderhouse.invoicing.entity.InvoiceEntity;
 import edu.coderhouse.invoicing.service.InvoiceService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -28,38 +29,60 @@ public class InvoiceController {
     }
 
     //PARA TRAER TODAS LAS FACTURAS
-    @Operation(summary = "Gets all invoices")
+    @Operation(summary = "Gets all invoices", description = "Fetches all the invoices from the system")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Successfull operation"),
+            @ApiResponse(responseCode = "200", description = "Successful operation"),
             @ApiResponse(responseCode = "400", description = "Invalid Request"),
+            @ApiResponse(responseCode = "500", description = "Internal server error")
     })
     @GetMapping(produces = {MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<Iterable<InvoiceEntity>> getAll(){
+    public ResponseEntity<Iterable<InvoiceEntity>> getAll() {
         Iterable<InvoiceEntity> invoices = invoiceService.getInvoices();
         return ResponseEntity.ok(invoices);
     }
 
     //PARA TRAER UNA FACTURA POR ID
-    @Operation(summary = "Gets an invoice by ID")
-    @GetMapping(value = "/{id}",produces = {MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<Optional<InvoiceEntity>> getById(@PathVariable long id){
+    @Operation(summary = "Gets an invoice by ID", description = "Fetches an invoice by its unique ID from the system")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successful operation"),
+            @ApiResponse(responseCode = "404", description = "Invoice not found"),
+            @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
+    @GetMapping(value = "/{id}", produces = {MediaType.APPLICATION_JSON_VALUE})
+    public ResponseEntity<Optional<InvoiceEntity>> getById(@PathVariable long id) {
         Optional<InvoiceEntity> invoice = invoiceService.getById(id);
 
-        //Verifico si la factura con ese id existe
-        if (invoice.isPresent()){
+        // Verifico si la factura con ese id existe
+        if (invoice.isPresent()) {
             return ResponseEntity.ok(invoice);
         } else {
             return ResponseEntity.notFound().build();
         }
     }
 
+    @GetMapping(value = "/{id}/with-client", produces = {MediaType.APPLICATION_JSON_VALUE})
+    public ResponseEntity<InvoiceDTO> getInvoiceWithClient(@PathVariable long id) {
+        Optional<InvoiceEntity> invoice = invoiceService.getById(id);
+        return invoice.map(invoiceEntity -> ResponseEntity.ok(new InvoiceDTO(invoiceEntity))).orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+    //TRAER UNA FACTURA POR ID CON EL CLIENTE ASOCIADO Y LOS DETALLES
+//    @GetMapping(value = "/{id}/with-client", produces = {MediaType.APPLICATION_JSON_VALUE})
+//    public ResponseEntity<InvoiceDTO> getInvoiceWithClient(@PathVariable long id) {
+//        Optional<InvoiceEntity> invoice = invoiceService.getById(id);
+//        return invoice
+//                .map(invoiceEntity -> ResponseEntity.ok(new InvoiceDTO(invoiceEntity)))
+//                .orElseGet(() -> ResponseEntity.notFound().build());
+//    }
+
     //PARA AGREGAR UNA NUEVA FACTURA
-    @Operation(summary = "Add a new invoice")
+    @Operation(summary = "Add a new invoice", description = "Creates a new invoice and returns the created invoice entity.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Successfull operation"),
-            @ApiResponse(responseCode = "400", description = "Invalid Parameters",
-                    content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponseDto.class))}
-            )
+        @ApiResponse(responseCode = "200", description = "Invoice created successfully"),
+        @ApiResponse(responseCode = "400", description = "Invalid parameters provided",
+                content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponseDto.class))}
+        ),
+        @ApiResponse(responseCode = "500", description = "Internal server error")
     })
     @PostMapping(consumes = {MediaType.APPLICATION_JSON_VALUE}, produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<InvoiceEntity> create(@RequestBody InvoiceEntity invoice) {
@@ -73,21 +96,30 @@ public class InvoiceController {
     }
 
     //PARA ACTUALIZAR UNA FACTURA
-    @Operation(summary = "Update invoice's data")
+    @Operation(summary = "Update invoice's data", description = "Updates an existing invoice based on the provided ID and returns the updated invoice entity.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Invoice updated successfully",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = InvoiceEntity.class))),
+            @ApiResponse(responseCode = "404", description = "Invoice not found"),
+            @ApiResponse(responseCode = "400", description = "Invalid parameters provided",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponseDto.class))
+            )
+    })
     @PutMapping(value = "/{id}", consumes = {MediaType.APPLICATION_JSON_VALUE}, produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<InvoiceEntity> update(@PathVariable long id, @RequestBody InvoiceEntity invoice) {
         Optional<InvoiceEntity> updatedInvoice = invoiceService.update(id, invoice);
 
-        // Verifico si la factura fue encontrada y actualizada
-        if (updatedInvoice.isPresent()) {
-            return ResponseEntity.ok(updatedInvoice.get());
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+        return updatedInvoice.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     //PARA ELIMINAR UNA FACTURA
-    @Operation(summary = "Remove an invoice")
+    @Operation(summary = "Remove an invoice", description = "Deletes an invoice by its ID")
+    @ApiResponses(value = {
+         @ApiResponse(responseCode = "204", description = "Invoice successfully deleted"),
+         @ApiResponse(responseCode = "404", description = "Invoice not found",
+                 content = @Content(mediaType = "application/json",
+                         schema = @Schema(implementation = ErrorResponseDto.class)))
+    })
     @DeleteMapping(value = "/{id}")
     public ResponseEntity<Void> delete(@PathVariable long id) {
         boolean deleted = invoiceService.delete(id);
@@ -98,7 +130,7 @@ public class InvoiceController {
             return ResponseEntity.notFound().build(); // 404 Not Found
         }
     }
-
+//VOY ACA
     //PARA ASIGNAR EL CLIENTE A UNA FACTURA
     @Operation(summary = "Assign a customer to an invoice")
     @PostMapping("/{clientId}/asign/{invoiceId}")

@@ -42,7 +42,7 @@ public class ClientEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Schema(description = "IDENTITY self-generated", requiredMode = Schema.RequiredMode.AUTO, example = "1")
-    private int id;
+    private Long id;
 
     @Column(name = "name", length = 75, nullable = false)
     @Schema(description = "Client's name", requiredMode = Schema.RequiredMode.REQUIRED, example = "Marcelo")
