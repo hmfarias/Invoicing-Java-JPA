@@ -30,6 +30,7 @@ public class InvoiceDetailEntity {
     /*END Constructors  ------------------------------------------------*/
 
     /*Fields -----------------------------------------------------------*/
+    @Getter
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long invoiceDetailId;
@@ -50,6 +51,7 @@ public class InvoiceDetailEntity {
     //@JsonManagedReference
     @JsonIgnoreProperties("invoiceDetails")
     private ProductEntity product;
+
     /*END Fields -----------------------------------------------------------*/
 
 

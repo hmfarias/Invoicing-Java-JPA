@@ -4,6 +4,7 @@ import edu.coderhouse.invoicing.dto.ErrorResponseDto;
 import edu.coderhouse.invoicing.entity.ClientEntity;
 import edu.coderhouse.invoicing.service.ClientService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -33,10 +34,10 @@ public class ClientController {
     }
 
     // PARA TRAER TODOS LOS CLIENTES
-    @Operation(summary = "Gets all clients")
+    @Operation(summary = "Gets all clients", description = "Retrieves a list of all clients from the system.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Clients retrieved successfully",
-                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ClientEntity.class))),
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ClientEntity[].class))),
             @ApiResponse(responseCode = "204", description = "No clients found"),
             @ApiResponse(responseCode = "400", description = "Invalid Request")
     })
@@ -52,34 +53,39 @@ public class ClientController {
     }
 
     // PARA TRAER UN CLIENTE POR ID
-    @Operation(summary = "Gets a client by ID")
+    @Operation(summary = "Gets a client by ID", description = "Retrieves a specific client by its unique ID.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Client found successfully",
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation = ClientEntity.class))),
             @ApiResponse(responseCode = "404", description = "Client not found")
     })
     @GetMapping(value = "/{id}", produces = {MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<ClientEntity> getById(@PathVariable long id) {
-        // Buscar cliente por ID
+    public ResponseEntity<ClientEntity> getById(
+            @Parameter(description = "Unique ID of the client to be retrieved", required = true)
+            @PathVariable long id) {
+
+        // Busco el cliente por ID
         return clientService.getById(id)
                 .map(ResponseEntity::ok) // Si el cliente se encuentra, retornar con 200 OK
                 .orElseGet(() -> ResponseEntity.notFound().build()); // Si no existe, retornar 404
     }
 
     // PARA AGREGAR UN NUEVO CLIENTE
-    @Operation(summary = "Add a new client")
+    @Operation(summary = "Add a new client", description = "Creates a new client and returns the created entity.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Client created successfully",
-                    content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ClientEntity.class))}),
-            @ApiResponse(responseCode = "400", description = "Invalid Parameters",
-                    content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponseDto.class))}),
-            @ApiResponse(responseCode = "500", description = "Internal Server Error")
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ClientEntity.class))),
+            @ApiResponse(responseCode = "400", description = "Invalid parameters",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponseDto.class))),
+            @ApiResponse(responseCode = "500", description = "Internal server error")
     })
     @PostMapping(consumes = {MediaType.APPLICATION_JSON_VALUE}, produces = {MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<?> create(@Valid @RequestBody ClientEntity client, BindingResult result) {
+    public ResponseEntity<?> create(
+            @Parameter(description = "Client entity to be created", required = true)
+            @Valid @RequestBody ClientEntity client, BindingResult result) {
+
         // Verificar si hay errores de validación
         if (result.hasErrors()) {
-            // Crear un objeto de respuesta para manejar errores de validación
             List<String> errors = result.getFieldErrors()
                     .stream()
                     .map(err -> "Field " + err.getField() + ": " + err.getDefaultMessage())
@@ -90,29 +96,30 @@ public class ClientController {
         try {
             // Guardar el cliente
             ClientEntity newClient = clientService.save(client);
-            // Retornar respuesta con 201 Created
-            return ResponseEntity.status(HttpStatus.CREATED).body(newClient);
+            return ResponseEntity.status(HttpStatus.CREATED).body(newClient); // 201 Created
         } catch (Exception e) {
             e.printStackTrace();
-            // En caso de error inesperado, retornar un código 500
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build(); // 500 Internal Server Error
         }
     }
 
     // PARA ACTUALIZAR UN CLIENTE
-    @Operation(summary = "Update a customer's data")
+    @Operation(summary = "Update a customer's data", description = "Updates a client's information based on the provided ID.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Client updated successfully",
-                    content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ClientEntity.class))}),
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ClientEntity.class))),
             @ApiResponse(responseCode = "404", description = "Client not found",
                     content = @Content(mediaType = "application/json")),
             @ApiResponse(responseCode = "400", description = "Invalid input data",
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponseDto.class))),
-            @ApiResponse(responseCode = "500", description = "Internal Server Error")
+            @ApiResponse(responseCode = "500", description = "Internal server error")
     })
     @PutMapping(value = "/{id}", consumes = {MediaType.APPLICATION_JSON_VALUE}, produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<ClientEntity> update(
+            @Parameter(description = "ID of the client to update", example = "1", required = true)
             @PathVariable long id,
+
+            @Parameter(description = "Updated client entity details", required = true)
             @Valid @RequestBody ClientEntity client) {
         try {
             // Intento actualizar el cliente
@@ -128,15 +135,17 @@ public class ClientController {
     }
 
 // PARA ELIMINAR UN CLIENTE
-    @Operation(summary = "Remove a client", description = "Deletes a client by their ID.")
+    @Operation(summary = "Remove a client", description = "Deletes a client by their unique ID.")
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "204", description = "Client deleted successfully"),
-        @ApiResponse(responseCode = "404", description = "Client not found",
-                content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponseDto.class))),
-        @ApiResponse(responseCode = "500", description = "Internal Server Error")
+            @ApiResponse(responseCode = "204", description = "Client deleted successfully"),
+            @ApiResponse(responseCode = "404", description = "Client not found",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponseDto.class))),
+            @ApiResponse(responseCode = "500", description = "Internal server error")
     })
     @DeleteMapping(value = "/{id}")
-    public ResponseEntity<Void> delete(@PathVariable long id) {
+    public ResponseEntity<Void> delete(
+            @Parameter(description = "ID of the client to delete", example = "1", required = true)
+            @PathVariable long id) {
         try {
             boolean deleted = clientService.delete(id);
 
@@ -146,7 +155,7 @@ public class ClientController {
                 return ResponseEntity.notFound().build(); // 404 Not Found
             }
         } catch (Exception e) {
-            e.printStackTrace(); // Log the exception for debugging purposes
+            e.printStackTrace(); // Log for debugging
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build(); // 500 Internal Server Error
         }
     }
