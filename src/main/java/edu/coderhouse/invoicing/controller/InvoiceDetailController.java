@@ -2,14 +2,18 @@ package edu.coderhouse.invoicing.controller;
 
 import edu.coderhouse.invoicing.dto.InvoiceDetailDTO;
 import edu.coderhouse.invoicing.entity.InvoiceDetailEntity;
+import edu.coderhouse.invoicing.entity.ProductEntity;
 import edu.coderhouse.invoicing.service.InvoiceDetailService;
+import edu.coderhouse.invoicing.service.ProductService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -24,12 +28,13 @@ import java.util.Optional;
 public class InvoiceDetailController {
     @Autowired
     private InvoiceDetailService invoiceDetailService;
+    private ProductService productService;
 
     //Constructor
-    public InvoiceDetailController(InvoiceDetailService service) {
-        this.invoiceDetailService = service;
+    public InvoiceDetailController(InvoiceDetailService invoiceDetailService, ProductService productService) {
+        this.invoiceDetailService = invoiceDetailService;
+        this.productService = productService;
     }
-
     //PARA TRAER TODOS LOS DETALLES
     @GetMapping(produces = {MediaType.APPLICATION_JSON_VALUE})
     @Operation(summary = "Retrieve all invoice details", description = "Fetches all invoice details from the system.")
@@ -78,33 +83,87 @@ public class InvoiceDetailController {
     }
 
     //PARA AGREGAR UN NUEVO DETALLE
+//    @PostMapping(consumes = {MediaType.APPLICATION_JSON_VALUE}, produces = {MediaType.APPLICATION_JSON_VALUE})
+//    @Operation(summary = "Create a new invoice detail", description = "Adds a new invoice detail to the system.")
+//    @ApiResponses(value = {
+//            @ApiResponse(responseCode = "200", description = "Invoice detail successfully created",
+//                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = InvoiceDetailEntity.class))),
+//            @ApiResponse(responseCode = "400", description = "Invalid request data",
+//                    content = @Content(mediaType = "application/json")),
+//            @ApiResponse(responseCode = "500", description = "Internal server error",
+//                    content = @Content(mediaType = "application/json"))
+//    })
+//    public ResponseEntity<InvoiceDetailEntity> create(
+//            @io.swagger.v3.oas.annotations.parameters.RequestBody(
+//                    description = "Invoice detail data to create", required = true,
+//                    content = @Content(schema = @Schema(implementation = InvoiceDetailEntity.class)))
+//            @RequestBody InvoiceDetailEntity invoiceDetail) {
+//
+//        try {
+//            InvoiceDetailEntity newInvoiceDetail = invoiceDetailService.save(invoiceDetail);
+//            return ResponseEntity.ok(newInvoiceDetail); // 200 OK al crear el detalle de factura
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            return ResponseEntity.internalServerError().build(); // 500 Error interno del servidor
+//        }
+//    }
+
     @PostMapping(consumes = {MediaType.APPLICATION_JSON_VALUE}, produces = {MediaType.APPLICATION_JSON_VALUE})
-    @Operation(summary = "Create a new invoice detail", description = "Adds a new invoice detail to the system.")
+    @Operation(summary = "Create a new invoice detail", description = "Adds a new invoice detail to the system, without associating an invoice or client initially.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Invoice detail successfully created",
-                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = InvoiceDetailEntity.class))),
+            @ApiResponse(responseCode = "201", description = "Invoice detail successfully created",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = InvoiceDetailDTO.class))),
             @ApiResponse(responseCode = "400", description = "Invalid request data",
                     content = @Content(mediaType = "application/json")),
             @ApiResponse(responseCode = "500", description = "Internal server error",
                     content = @Content(mediaType = "application/json"))
     })
-    public ResponseEntity<InvoiceDetailEntity> create(
+
+    public ResponseEntity<InvoiceDetailDTO> create(
             @io.swagger.v3.oas.annotations.parameters.RequestBody(
-                    description = "Invoice detail data to create", required = true,
-                    content = @Content(schema = @Schema(implementation = InvoiceDetailEntity.class)))
-            @RequestBody InvoiceDetailEntity invoiceDetail) {
+                    description = "Invoice detail data to create, excluding invoice and client", required = true,
+                    content = @Content(schema = @Schema(implementation = InvoiceDetailDTO.class)))
+            @Valid @RequestBody InvoiceDetailDTO invoiceDetailDTO) {
 
         try {
+            // Verifico existencia del producto
+            ProductEntity product = productService.getById(invoiceDetailDTO.getProduct().getId())
+                    .orElseThrow(() -> new IllegalArgumentException("Product not found"));
+
+            // Verifico que la cantidad solicitada sea menor o igual al stock disponible
+            if (invoiceDetailDTO.getAmount() > product.getStock()) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(null); // O devolver un mensaje adecuado sobre stock insuficiente
+            }
+            // VOY ACA Y DEBO CAMBIAR EL CODIGO PARA QUE DEVUELVA UN MENSAJE ADECUADO
+
+            // Reducir el stock del producto según la cantidad solicitada
+            product.setStock(product.getStock() - invoiceDetailDTO.getAmount());
+            productService.updateProductStock(product); // Llamar al servicio para actualizar el stock en la base de datos
+
+            // Mapear de DTO a entidad
+            InvoiceDetailEntity invoiceDetail = new InvoiceDetailEntity();
+            invoiceDetail.setAmount(invoiceDetailDTO.getAmount());
+            invoiceDetail.setPrice(invoiceDetailDTO.getPrice());
+            invoiceDetail.setProduct(product);
+
+            // Guardar el detalle de la factura
             InvoiceDetailEntity newInvoiceDetail = invoiceDetailService.save(invoiceDetail);
-            return ResponseEntity.ok(newInvoiceDetail); // 200 OK al crear el detalle de factura
+
+            // Mapear de nuevo a DTO para la respuesta
+            InvoiceDetailDTO responseDTO = new InvoiceDetailDTO(newInvoiceDetail);
+            return ResponseEntity.status(HttpStatus.CREATED).body(responseDTO); // 201 Created
+
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null); // 400 Bad Request si el producto no se encuentra
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.internalServerError().build(); // 500 Error interno del servidor
         }
     }
-    //voy aca ---
 
-    //PARA ACTUALIZAR UN DETALLE
+
+       //PARA ACTUALIZAR UN DETALLE
     @PutMapping(value = "/{id}", consumes = {MediaType.APPLICATION_JSON_VALUE}, produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<InvoiceDetailEntity> update(@PathVariable long id, @RequestBody InvoiceDetailEntity invoiceDetail) {
         Optional<InvoiceDetailEntity> updatedInvoiceDetail = invoiceDetailService.update(id, invoiceDetail);

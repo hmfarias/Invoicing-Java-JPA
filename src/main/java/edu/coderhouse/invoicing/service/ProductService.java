@@ -11,50 +11,55 @@ import java.util.Optional;
 @Service
 public class ProductService {
     @Autowired //Indico que la propiedad será inyectada
-    private ProductRepository repository;
+    private ProductRepository productRepository;
 
     //Creo el constructor
 
     public ProductService(ProductRepository repository) {
-        this.repository = repository;
+        this.productRepository = repository;
     }
 
     //INSERTAR UN PRODUCTO
     public ProductEntity save(ProductEntity product){
-        return repository.save(product);
+        return productRepository.save(product);
     }
 
     //OBTENER TODOS LOS PRODUCTOS
     public List<ProductEntity> getProducts(){
-        return repository.findAll();
+        return productRepository.findAll();
     }
 
     //OBTENER UN PRODUCTO POR ID
     //uso Optional porque puede que el producto que busque esté o no esté.
     //si no está, Optional resuelve
     public Optional<ProductEntity> getById(long id){
-        return repository.findById(id);
+        return productRepository.findById(id);
     }
 
     //ACTUALIZAR UN PRODUCTO
     public Optional<ProductEntity> update(long id, ProductEntity newProductData) {
-        return repository.findById(id).map(product -> {
+        return productRepository.findById(id).map(product -> {
             product.setDescription(newProductData.getDescription());
             product.setCode(newProductData.getCode());
             product.setStock(newProductData.getStock());
             product.setPrice(newProductData.getPrice());
-            return repository.save(product);
+            return productRepository.save(product);
         });
     }
 
     //ELIMINAR UN PRODUCTO
     public boolean delete(long id) {
-        Optional<ProductEntity> product = repository.findById(id);
+        Optional<ProductEntity> product = productRepository.findById(id);
         if (product.isPresent()) {
-            repository.deleteById(id);
+            productRepository.deleteById(id);
             return true;
         }
         return false;
+    }
+
+    //ACTUALIZAR STOCK DE PRODUCTO
+    public ProductEntity updateProductStock(ProductEntity product) {
+        return productRepository.save(product); // Actualiza el producto en la base de datos
     }
 
 }

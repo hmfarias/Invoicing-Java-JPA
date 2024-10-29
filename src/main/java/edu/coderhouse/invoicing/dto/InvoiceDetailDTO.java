@@ -49,6 +49,10 @@ public class InvoiceDetailDTO {
         this.amount = detail.getAmount();
         this.price = detail.getPrice();
         this.product = new ProductDTO(detail.getProduct());
-        this.invoice = new InvoiceSummaryDTO(detail.getInvoice()); // Asignación al DTO resumen
+        //this.invoice = new InvoiceSummaryDTO(detail.getInvoice()); // Asignación al DTO resumen
+        // Si la factura está presente, asignarla al DTO de resumen
+        if (detail.getInvoice() != null) {
+            this.invoice = new InvoiceSummaryDTO(detail.getInvoice());
+        }
     }
 }
