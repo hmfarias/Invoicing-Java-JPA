@@ -29,7 +29,7 @@
 					"response": []
 				},
 				{
-					"name": "Clientes",
+					"name": "Clients",
 					"event": [
 						{
 							"listen": "test",
@@ -100,7 +100,7 @@
 					"response": []
 				},
 				{
-					"name": "Clientes",
+					"name": "Clients",
 					"protocolProfileBehavior": {
 						"disabledSystemHeaders": {}
 					},
@@ -132,7 +132,7 @@
 					"response": []
 				},
 				{
-					"name": "Clientes By Id",
+					"name": "Clients By Id",
 					"request": {
 						"method": "GET",
 						"header": [],
@@ -152,7 +152,7 @@
 					"response": []
 				},
 				{
-					"name": "Clientes By Id",
+					"name": "Clients By Id",
 					"request": {
 						"method": "DELETE",
 						"header": [],
