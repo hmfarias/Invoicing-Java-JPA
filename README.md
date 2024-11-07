@@ -6,16 +6,9 @@
 
 <!-- PROJECT LOGO -->
 <div align="center">
-  <a href="https://github.com/hmfarias/NotreDameJoyas">
-    <img src="https://github.com/hmfarias/NotreDameJoyas/blob/main/src/assets/logo2.png" alt="Logo" width="350" height="auto">
-  </a>
-  <h2 align="center">Descubre lo que necesites en cada click</h2>
 
   <p align="center">
-    Polirubro online
-    <br />
-    <a href="https://hmfarias.github.io/NotreDameJoyas/" target="_blank" ><strong>Explora el sitio en Git Pages»</strong></a>
-    <br />
+    Backend para facturación
     <br />
     <a href="https://github.com/hmfarias/NotreDameJoyas">Ver repositorio</a>
     ·
