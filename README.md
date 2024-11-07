@@ -24,7 +24,7 @@
 
 1. [Introducción](#introduccion)
 3. [Construido con](#consturido)
-4. [Consideraciones sobre el Router](#router)
+4. [Modo de uso](#uso)
 7. [Contribuyendo](#contribuyendo)
 8. [Licencia](#licencia)
 9. [Contacto](#contacto)
@@ -47,24 +47,125 @@ Para ello se han usado 3 actores, el cliente quién es el que compra los product
 <a name="consturido"></a>
 ### CONSTRUIDO CON
 
-<img alt="JAVA" src="https://img.shields.io/badge/html5-%23E34F26.svg?style=for-the-badge&logo=html5&logoColor=white"/> como lenguaje de programación multiplataforma orientado a objetos .
 
-<img alt="SPRING BOOT" src="https://img.shields.io/badge/css3-%231572B6.svg?style=for-the-badge&logo=css3&logoColor=white"/> como herramienta que acelera y simplifica el desarrollo de microservicios y aplicaciones web .
+![Static Badge](https://img.shields.io/badge/JAVA-blue?style=for-the-badge) como lenguaje de programación multiplataforma orientado a objetos.
 
-<img alt="MySQL" src="https://img.shields.io/badge/javascript-%23323330.svg?style=for-the-badge&logo=javascript&logoColor=%23F7DF1E"/> como lenguaje de programación interpretado, de alto nivel y dinámico. Se ejecuta en el navegador del cliente, lo que permite la creación de páginas web interactivas y dinámicas. 
+![Static Badge](https://img.shields.io/badge/SPRING_BOOT-green?style=for-the-badge) como herramienta que acelera y simplifica el desarrollo de microservicios y aplicaciones web.
 
-![Static Badge](https://img.shields.io/badge/React-green?style=for-the-badge) como una de las librerías más populares de JavaScript para el desarrollo de aplicaciones móviles y web. Creada por Facebook, React contiene una colección de fragmentos de código JavaScript reutilizables utilizados para crear interfaces de usuario (UI) llamadas componentes.
+![Static Badge](https://img.shields.io/badge/MySQL-red?style=for-the-badge) como sistema de gestión de bases de datos .
 
-![Static Badge](https://img.shields.io/badge/CHAKRA-orange?style=for-the-badge) como una librería de componentes de interfaz de usuario para React que permite construir aplicaciones web modernas y accesibles de manera rápida, ofreciendo componentes personalizables y listos para usar, con un enfoque en simplicidad y diseño responsivo.
 
 [Volver al menú](#top)
 <hr>
 
 
-<a name="router"></a>
-## CONSIDERACIONES SOBRE EL ROUTER
+<a name="uso"></a>
+## MODO DE USO 
 
-Con la finalidad de utilizar GitHub Pages, se ha instalado gh-pages. Atento a ello, y para lograr la compatibilidad y automatización a la hora de realizar el deploy, fue necesario agregar en todos los paths "/NotreDameJoyas".
+### Instalación 
+
+1. ##### Clonar el proyecto del repositorio
+
+Cree una carpeta en un directorio local y desde la `terminal` dentro de la carpeta creada, inicialice git:
+
+```
+git init
+```
+
+- Clonar todo el proyecto:
+
+```
+git clone https://github.com/hmfarias/Invoicing-Java-JPA.git
+```
+
+Desde la carpeta clonada podrá seguir los siguientes pasos:
+
+2. #### Levantar el servicio MySql mediante Docker Commposse: (Para ello, deberá tener instalado y corriendo Docker en su PC). 
+
+En la carpeta raíz del sistema podrá encontrar el archivo "docker-compose.yml". 
+
+Desde la terminal y ubicado en dicha carpeta, deberá correr dicho archivo:
+
+```
+docker-compose up -d
+```
+
+Desde la carpeta clonada con ejecutar InteliJ
+
+3. #### Ejecutar el sistema:
+  
+Ejecutar "src/main/java/edu.coderhouse.invoicing/InvoicingApplication"
+
+El sistema se iniciará y realizará una carga de datos para las pruebas.
+
+4. #### Ejecutar Postman:
+
+Para ello podrá encontrar a nivel de carpeta raiz, el archivo "INVOICING.postman_collection", el cual contiene las colección Postman para las pruebas.
+Importe desde Postman este archivo.
+
+Una vez importado el archivo en cuestión, podrá encontrar cuatro carpetas (CLIENTS, PRODUCTS, INVOICE, INVOICE-DETAIL), cada una con los diferentes métodos que prueban el sistema:
+
+5. #### Camino de Prueba ejemplo:
+
+Para probar la creación de una factura, las colecciones Postman están armadas para seguir el siguiente camino (aunque usted puede optar por realizar pruebas distintas cambiando el body del request de cada método):
+
+  Agruegue un nuevo cliente usando el método POST de la carpeta CLIENTS. Esto agregará el cliente:
+
+```
+{
+  "name": "Anderson2",
+  "lastName": "Ocania",
+  "docNumber": "27453890"
+}   
+```
+  Puede probar el metoo PUT de CLIENTS para corregir el apellido del nuevo cliente:
+
+
+  Puede probar el metoo PUT de CLIENTS para corregir el apellido del nuevo cliente:
+
+
+```
+{
+  "name": "Anderson",
+  "lastName": "Ocaña",
+  "docNumber": "11223344"
+}   
+```
+
+En este punto usted podrá tambien consultar la lista de todos los clientes (GET) o del cliente recien agregado (GET por Id)
+
+Agregue una nueva factura usando el método POST de la carpeta INVOICES
+
+
+```
+{
+    "client": {
+        "id": 8
+    },
+    "invoiceDetails": [
+        {
+            "product": {
+                "id": 1
+            },
+            "amount": 5
+        }
+    ]
+} 
+```
+
+El sistema realizará las siguientes acciones antes de poder dar de alta una factura:
+
+  - Verificación de la existencia del cliente
+  - Verificación de la existencia del producto
+  - Verificación de la existencia de Stock suficiente del producto seleccionado
+  - Actualización del Stock (en caso de que haya superado el control anterior)
+  - Asignación de la fecha y hora de creación de la factura (campo createdAt), utilizando para ello la API externa "TIME API".
+  - Alta de la nueva factura
+
+
+6. #### Modificación de una factura:
+
+   Por regla contable de negocio, las facturas cargadas no pueden modificarse, aunque si pueden anularse.
 
 
 [Volver al menú](#top)
