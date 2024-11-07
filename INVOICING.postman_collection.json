@@ -1,0 +1,532 @@
+{
+	"info": {
+		"_postman_id": "88de05e3-745e-4998-b0ec-0a8d81ed62e9",
+		"name": "INVOICING",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "15328102"
+	},
+	"item": [
+		{
+			"name": "CLIENTS",
+			"item": [
+				{
+					"name": "Clients",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:5500/api/clients",
+							"host": [
+								"localhost"
+							],
+							"port": "5500",
+							"path": [
+								"api",
+								"clients"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Clientes",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response status code is 415\", function () {",
+									"    pm.expect(pm.response.code).to.equal(415);",
+									"});",
+									"",
+									"",
+									"pm.test(\"Content-Type header is application/json\", function () {",
+									"    pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json');",
+									"});",
+									"",
+									"",
+									"pm.test(\"Response has the required fields - timestamp, status, error, and path\", function () {",
+									"    const responseData = pm.response.json();",
+									"    ",
+									"    pm.expect(responseData).to.be.an('object');",
+									"    pm.expect(responseData.timestamp).to.exist;",
+									"    pm.expect(responseData.status).to.exist;",
+									"    pm.expect(responseData.error).to.exist;",
+									"    pm.expect(responseData.path).to.exist;",
+									"});",
+									"",
+									"",
+									"pm.test(\"Timestamp is in a valid date format\", function () {",
+									"    const responseData = pm.response.json();",
+									"    ",
+									"    pm.expect(responseData.timestamp).to.match(/^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}.\\d{3}Z$/);",
+									"});",
+									"",
+									"",
+									"pm.test(\"Response time is less than 300ms\", function () {",
+									"  pm.expect(pm.response.responseTime).to.be.below(300);",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Anderson2\",\n    \"lastName\": \"Ocania\",\n    \"docNumber\": \"27453890\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:5500/api/clients",
+							"host": [
+								"localhost"
+							],
+							"port": "5500",
+							"path": [
+								"api",
+								"clients"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Clientes",
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {}
+					},
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Anderson\",\n    \"lastName\": \"Ocaña\",\n    \"docNumber\": \"11223344\"\n}\n\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:5500/api/clients/8",
+							"host": [
+								"localhost"
+							],
+							"port": "5500",
+							"path": [
+								"api",
+								"clients",
+								"8"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Clientes By Id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:5500/api/clients/8",
+							"host": [
+								"localhost"
+							],
+							"port": "5500",
+							"path": [
+								"api",
+								"clients",
+								"8"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Clientes By Id",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "localhost:5500/api/clients/8",
+							"host": [
+								"localhost"
+							],
+							"port": "5500",
+							"path": [
+								"api",
+								"clients",
+								"8"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "INVOICES",
+			"item": [
+				{
+					"name": "Invoices",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:5500/api/invoices",
+							"host": [
+								"localhost"
+							],
+							"port": "5500",
+							"path": [
+								"api",
+								"invoices"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Invoices",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"client\": {\n        \"id\": 8\n    },\n    \"invoiceDetails\": [\n        {\n            \"product\": {\n                \"id\": 1\n            },\n            \"amount\": 5\n        }\n    ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:5500/api/invoices",
+							"host": [
+								"localhost"
+							],
+							"port": "5500",
+							"path": [
+								"api",
+								"invoices"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Invoices By Id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:5500/api/invoices/11",
+							"host": [
+								"localhost"
+							],
+							"port": "5500",
+							"path": [
+								"api",
+								"invoices",
+								"11"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Invoices By Id with Client",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:5500/api/invoices/11/with-client",
+							"host": [
+								"localhost"
+							],
+							"port": "5500",
+							"path": [
+								"api",
+								"invoices",
+								"11",
+								"with-client"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Invoices By Id",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "localhost:5500/api/invoices/11",
+							"host": [
+								"localhost"
+							],
+							"port": "5500",
+							"path": [
+								"api",
+								"invoices",
+								"11"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "PRODUCTS",
+			"item": [
+				{
+					"name": "Products",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:5500/api/products",
+							"host": [
+								"localhost"
+							],
+							"port": "5500",
+							"path": [
+								"api",
+								"products"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Products",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"description\": \"SSDFSDFSDFSDF6\",\n    \"code\": \"SDFSDF\",\n    \"stock\": 28,\n    \"price\": 1200\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:5500/api/products",
+							"host": [
+								"localhost"
+							],
+							"port": "5500",
+							"path": [
+								"api",
+								"products"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Products",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"description\": \"Ipad Pro 11' - 512Gb\",\n    \"code\": \"PROD008\",\n    \"stock\": 200,\n    \"price\": 1100\n\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:5500/api/products/8",
+							"host": [
+								"localhost"
+							],
+							"port": "5500",
+							"path": [
+								"api",
+								"products",
+								"8"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Products By Id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:5500/api/products/1",
+							"host": [
+								"localhost"
+							],
+							"port": "5500",
+							"path": [
+								"api",
+								"products",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Products By Id",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "localhost:5500/api/products/8",
+							"host": [
+								"localhost"
+							],
+							"port": "5500",
+							"path": [
+								"api",
+								"products",
+								"8"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "INVOICE DETAILS",
+			"item": [
+				{
+					"name": "Invoice Details",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:5500/api/invoice-details",
+							"host": [
+								"localhost"
+							],
+							"port": "5500",
+							"path": [
+								"api",
+								"invoice-details"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Invoice Details",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"amount\": 10,\n    \"product\": {\n        \"id\": 1\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:5500/api/invoice-details",
+							"host": [
+								"localhost"
+							],
+							"port": "5500",
+							"path": [
+								"api",
+								"invoice-details"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Invoice by Id",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"amount\": 100,\n    \"product\": {\n        \"id\": 1\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:5500/api/invoice-details/14",
+							"host": [
+								"localhost"
+							],
+							"port": "5500",
+							"path": [
+								"api",
+								"invoice-details",
+								"14"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Invoice Details By Id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:5500/api/invoice-details/14",
+							"host": [
+								"localhost"
+							],
+							"port": "5500",
+							"path": [
+								"api",
+								"invoice-details",
+								"14"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Invoice Details By Id",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "localhost:5500/api/invoice-details/14",
+							"host": [
+								"localhost"
+							],
+							"port": "5500",
+							"path": [
+								"api",
+								"invoice-details",
+								"14"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
