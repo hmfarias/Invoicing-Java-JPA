@@ -15,13 +15,13 @@ public class ProductDTO {
     private Long id;
     private String description;
     private String code;
-    private Double price;
+//    private Double price;
 
     // Constructor
     public ProductDTO(ProductEntity product) {
         this.id = product.getId();
         this.description = product.getDescription();
         this.code = product.getCode();
-        this.price = product.getPrice();
+//        this.price = product.getPrice();
     }
 }

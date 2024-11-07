@@ -2,8 +2,14 @@ package edu.coderhouse.invoicing.controller;
 
 import edu.coderhouse.invoicing.dto.ErrorResponseDto;
 import edu.coderhouse.invoicing.dto.InvoiceDTO;
+import edu.coderhouse.invoicing.entity.ClientEntity;
+import edu.coderhouse.invoicing.entity.InvoiceDetailEntity;
 import edu.coderhouse.invoicing.entity.InvoiceEntity;
+import edu.coderhouse.invoicing.entity.ProductEntity;
+import edu.coderhouse.invoicing.service.ClientService;
 import edu.coderhouse.invoicing.service.InvoiceService;
+import edu.coderhouse.invoicing.service.ProductService;
+import edu.coderhouse.invoicing.service.TimeApiService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -11,11 +17,13 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 @RestController //Transforma la clase en un controlador de Spring
@@ -23,6 +31,15 @@ import java.util.Optional;
 public class InvoiceController {
     @Autowired
     private InvoiceService invoiceService;
+
+    @Autowired
+    private ClientService clientService;
+
+    @Autowired
+    private ProductService productService;
+
+    @Autowired
+    private TimeApiService timeApiService;
 
     //Constructor
     public InvoiceController(InvoiceService invoiceService) {
@@ -85,7 +102,7 @@ public class InvoiceController {
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    //PARA AGREGAR UNA NUEVA FACTURA COMPLETA CON CLIENTE E INVOICE DETAILS EN EL REQUEST
+    // PARA CREAR UNA NUEVA FACTURA
     @Operation(
             summary = "Add a new invoice",
             description = "Creates a new invoice and returns the created invoice entity."
@@ -98,40 +115,73 @@ public class InvoiceController {
             @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
     })
     @PostMapping(consumes = {MediaType.APPLICATION_JSON_VALUE}, produces = {MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<InvoiceEntity> create(
+    public ResponseEntity<?> create(
             @Parameter(description = "Invoice entity to be created", required = true)
-            @RequestBody InvoiceEntity invoice) {
+            @RequestBody
+            @Schema(description = "Invoice data to create a new invoice",
+                    example = "{\n  \"client\": { \"id\": 8 },\n  \"invoiceDetails\": [\n    {\n      \"product\": { \"id\": 1 },\n      \"amount\": 1\n    }\n  ]\n}")
+            InvoiceEntity invoice) {
         try {
+            // Verificar existencia del cliente
+            Optional<ClientEntity> clientOpt = clientService.getById(invoice.getClient().getId());
+            if (clientOpt.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(new ErrorResponseDto("400", "Bad Request", "Client not found", "clientId"));
+            }
+
+            double invoiceTotal = 0;
+
+            // Procesar y validar los detalles de la factura
+            for (InvoiceDetailEntity detail : invoice.getInvoiceDetails()) {
+                ProductEntity product = productService.getById(detail.getProduct().getId())
+                        .orElseThrow(() -> new IllegalArgumentException("Product not found"));
+
+
+                // Fuerzo la carga de description y code
+                product.getDescription();
+                product.getCode();
+
+                // Verificar que el stock sea suficiente
+                if (detail.getAmount() > product.getStock()) {
+                    return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                            .body(new ErrorResponseDto("400", "Bad Request",
+                                    "Insufficient stock for product ID: " + product.getId(), "amount"));
+                }
+
+                // Reducir el stock del producto
+                product.setStock(product.getStock() - detail.getAmount());
+                productService.updateProductStock(product);
+
+                // Calcular el precio del detalle y actualizar el total de la factura
+                double detailTotal = detail.getAmount() * product.getPrice();
+                detail.setPrice(detailTotal);
+                invoiceTotal += detailTotal;
+            }
+
+            // Asignar el total calculado a la factura
+            invoice.setTotal(invoiceTotal);
+
+            // Asigno la hora desde la API
+            LocalDateTime createdAtAPI = timeApiService.getCurrentDateTime();
+            invoice.setCreatedAt(createdAtAPI);
+
+            // Guardar la factura
             InvoiceEntity newInvoice = invoiceService.save(invoice);
             return ResponseEntity.ok(newInvoice);
+
+
+        } catch (IllegalArgumentException e) {
+            ErrorResponseDto errorResponse = new ErrorResponseDto(
+                    String.valueOf(HttpStatus.BAD_REQUEST.value()),
+                    HttpStatus.BAD_REQUEST.getReasonPhrase(),
+                    e.getMessage(),
+                    "productId"
+            );
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.internalServerError().build();
         }
-    }
-
-    //PARA ACTUALIZAR UNA FACTURA
-    @Operation(
-            summary = "Update invoice's data",
-            description = "Updates an existing invoice based on the provided ID and returns the updated invoice entity."
-    )
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Invoice updated successfully",
-                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = InvoiceEntity.class))),
-            @ApiResponse(responseCode = "404", description = "Invoice not found"),
-            @ApiResponse(responseCode = "400", description = "Invalid parameters provided",
-                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponseDto.class))
-            )
-    })
-    @PutMapping(value = "/{id}", consumes = {MediaType.APPLICATION_JSON_VALUE}, produces = {MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<InvoiceEntity> update(
-            @Parameter(description = "ID of the invoice to update", required = true)
-            @PathVariable long id,
-            @Parameter(description = "Updated invoice data", required = true)
-            @RequestBody InvoiceEntity invoice) {
-
-        Optional<InvoiceEntity> updatedInvoice = invoiceService.update(id, invoice);
-        return updatedInvoice.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     //PARA ELIMINAR UNA FACTURA
@@ -156,25 +206,6 @@ public class InvoiceController {
         }
     }
 
-    //PARA ASIGNAR LA FACTURA A UN CLIENTE
-    @Operation(summary = "Assign a customer to an invoice", description = "Assigns a specified client to a specified invoice based on their IDs.")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Client assigned to invoice successfully",
-                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = InvoiceEntity.class))),
-            @ApiResponse(responseCode = "404", description = "Client or Invoice not found",
-                    content = @Content),
-            @ApiResponse(responseCode = "500", description = "Internal server error",
-                    content = @Content)
-    })
-    @PostMapping("/{clientId}/asign/{invoiceId}")
-    public ResponseEntity<InvoiceEntity> asignClient(
-            @Parameter(description = "ID of the client to be assigned", required = true)
-            @PathVariable Long clientId,
-            @Parameter(description = "ID of the invoice to assign the client to", required = true)
-            @PathVariable Long invoiceId) throws Exception {
 
-        InvoiceEntity invoice = invoiceService.asignClient(clientId, invoiceId);
-        return ResponseEntity.ok(invoice);
-    }
 
 }

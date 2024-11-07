@@ -15,10 +15,10 @@ import java.util.List;
 
 @Entity
 @Table(name = "clients")
+@Schema(description = "Represents a client entity in the invoicing system.")
 public class ClientEntity {
 
     /*Constructors  ----------------------------------------------------*/
-
     public ClientEntity(){}
 
     public ClientEntity(String name, String lastName, String docNumber) {
@@ -57,7 +57,6 @@ public class ClientEntity {
     private String docNumber;
 
     @OneToMany(mappedBy = "client", cascade = CascadeType.ALL)
-    //@Schema(description = "List of client's invoices", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
     @JsonManagedReference
     private List<InvoiceEntity> invoices;
 

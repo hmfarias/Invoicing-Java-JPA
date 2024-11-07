@@ -21,6 +21,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "invoice")
+@Schema(description = "Represents an invoice in the system, including the client, creation date, total amount, and associated invoice details.")
 public class InvoiceEntity {
     /*Constructors  ----------------------------------------------------*/
     public InvoiceEntity(ClientEntity client, LocalDateTime createdAt, double total) {
@@ -43,25 +44,15 @@ public class InvoiceEntity {
     @Schema(description = "Total invoice value", requiredMode = Schema.RequiredMode.AUTO, example = "7.450,00")
     private double total;
 
-//    @ManyToOne
-    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "client_id")
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "client_id")
     @JsonBackReference
+    @Schema(description = "The client to whom the invoice is associated", example = "ClientEntity{id=1, name=\"Marcelo\", lastName=\"Farias\"}")
     private ClientEntity client;
 
-//    @OneToMany(mappedBy = "invoice", cascade = CascadeType.ALL)
     @OneToMany(mappedBy = "invoice", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonManagedReference
+    @Schema(description = "List of invoice details associated with this invoice", example = "[InvoiceDetailEntity{invoiceDetailId=1, amount=5, price=100.0}, ...]")
     private List<InvoiceDetailEntity> invoiceDetails;
-
-//
-//    @OneToMany(mappedBy = "invoice", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-//    private List<InvoiceDetailEntity> invoiceDetails;
-//
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "client_id", nullable = false)
-//    private ClientEntity client;
-
     /*END Fields -----------------------------------------------------------*/
 }
