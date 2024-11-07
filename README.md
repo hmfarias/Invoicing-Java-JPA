@@ -6,9 +6,8 @@
 
 <!-- PROJECT LOGO -->
 <div align="center">
-## INTRODUCCION
   <p align="center">
-    # Backend para facturación
+    BACKEND PARA FACTURACION
     <br />
     <a href="https://github.com/hmfarias/NotreDameJoyas">Ver repositorio</a>
     ·
@@ -37,9 +36,9 @@
 <a name="introduccion"></a>
 ## INTRODUCCION
 
-Bienvenidos a **Notre Dame**, tu tienda polirubro online exclusiva. Aquí encontrarás una selección variada de artículos de gran calidad. Nuestro compromiso es ofrecer elementos de alta calidad, elaborados con los mejores materiales y un enfoque en la atención al detalle.
+El proyecto consiste en el desarrollo de una aplicación que  permita administrar las ventas de un comercio.
+Para ello se han usado 3 actores, el cliente quién es el que compra los productos que son los elementos que forman las ventas del comercio.
 
-Este repositorio contiene el código fuente de nuestra plataforma, desarrollada para brindar una experiencia de compra fluida y segura, asegurando que nuestros clientes puedan explorar y adquirir sus artículos favoritas de manera sencilla y rápida. ¡Gracias por visitarnos! 
 
 
 [Volver al menú](#top)
@@ -48,11 +47,11 @@ Este repositorio contiene el código fuente de nuestra plataforma, desarrollada 
 <a name="consturido"></a>
 ### CONSTRUIDO CON
 
-<img alt="HTML5" src="https://img.shields.io/badge/html5-%23E34F26.svg?style=for-the-badge&logo=html5&logoColor=white"/> (HyperText Markup Language) como lenguaje de marcación de hipertéxto estándar utilizado para crear y diseñar páginas web.
+<img alt="JAVA" src="https://img.shields.io/badge/html5-%23E34F26.svg?style=for-the-badge&logo=html5&logoColor=white"/> como lenguaje de programación multiplataforma orientado a objetos .
 
-<img alt="CSS3" src="https://img.shields.io/badge/css3-%231572B6.svg?style=for-the-badge&logo=css3&logoColor=white"/> (Cascading Style Sheets, Level 3) como lenguaje de diseño gráfico utilizado para controlar el aspecto visual de las páginas web, separando el contenido (HTML) de la presentación visual (CSS).
+<img alt="SPRING BOOT" src="https://img.shields.io/badge/css3-%231572B6.svg?style=for-the-badge&logo=css3&logoColor=white"/> como herramienta que acelera y simplifica el desarrollo de microservicios y aplicaciones web .
 
-<img alt="JavaScript" src="https://img.shields.io/badge/javascript-%23323330.svg?style=for-the-badge&logo=javascript&logoColor=%23F7DF1E"/> como lenguaje de programación interpretado, de alto nivel y dinámico. Se ejecuta en el navegador del cliente, lo que permite la creación de páginas web interactivas y dinámicas. 
+<img alt="MySQL" src="https://img.shields.io/badge/javascript-%23323330.svg?style=for-the-badge&logo=javascript&logoColor=%23F7DF1E"/> como lenguaje de programación interpretado, de alto nivel y dinámico. Se ejecuta en el navegador del cliente, lo que permite la creación de páginas web interactivas y dinámicas. 
 
 ![Static Badge](https://img.shields.io/badge/React-green?style=for-the-badge) como una de las librerías más populares de JavaScript para el desarrollo de aplicaciones móviles y web. Creada por Facebook, React contiene una colección de fragmentos de código JavaScript reutilizables utilizados para crear interfaces de usuario (UI) llamadas componentes.
 
